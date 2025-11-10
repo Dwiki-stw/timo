@@ -1,0 +1,1 @@
+delete from moods where label in ('happy', 'exited', 'normal', 'anggry', 'sad', 'tired')

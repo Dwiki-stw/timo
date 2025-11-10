@@ -1,0 +1,1 @@
+insert into moods (label) values ('happy'), ('exited'), ('normal'), ('anggry'), ('sad'), ('tired')
