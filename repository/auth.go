@@ -32,7 +32,7 @@ func (a *auth) GetUserByEmail(ctx context.Context, email string) (*models.User, 
 	query := `
 		SELECT id, uid, google_id, name, email, password_hash, created_at, updated_at
 		FROM users 
-		Where email = ?
+		Where email = $1
 	`
 	var user models.User
 	err := a.Pool.QueryRow(ctx, query, email).
