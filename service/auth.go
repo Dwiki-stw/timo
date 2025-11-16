@@ -94,18 +94,23 @@ func (a *auth) LoginWithPassword(ctx context.Context, req *dto.LoginWithPassword
 
 func (a *auth) Register(ctx context.Context, req *dto.RegisterRequest) (*dto.RegisterResponse, error) {
 	existing, err := a.repo.GetUserByEmail(ctx, req.Email)
-	if !errors.Is(err, sql.ErrNoRows) {
-		return nil, helper.NewAppError(helper.INTERNAL_ERROR, "internal server error", err)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return nil, helper.NewAppError(helper.INTERNAL_ERROR, "failed to get user", err)
 	}
 
 	if existing != nil {
 		return nil, helper.NewAppError(helper.EMAIL_EXIST, "email already registered", nil)
 	}
 
+	passwordHashed, err := a.hasher.Hash(req.Password)
+	if err != nil {
+		return nil, helper.NewAppError(helper.INTERNAL_ERROR, "failed to hash password", err)
+	}
+
 	user := &models.User{
 		Email:    req.Email,
 		Name:     req.Name,
-		Password: &req.Password,
+		Password: &passwordHashed,
 	}
 
 	err = a.repo.CreateUser(ctx, user)
