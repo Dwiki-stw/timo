@@ -13,13 +13,13 @@ import (
 
 type auth struct {
 	repo      domain.AuthRepository
-	jwtKey    []byte
 	hasher    helper.PasswordHasher
 	validator helper.TokenValidator
+	token     helper.Token
 }
 
-func NewAuth(repo domain.AuthRepository) domain.AuthService {
-	return &auth{repo: repo}
+func NewAuth(repo domain.AuthRepository, hasher helper.PasswordHasher, validator helper.TokenValidator, token helper.Token) domain.AuthService {
+	return &auth{repo: repo, hasher: hasher, validator: validator, token: token}
 }
 
 func (a *auth) LoginWithGoogle(ctx context.Context, req *dto.LoginWithGoogleRequest) (*dto.LoginResponse, error) {
@@ -47,7 +47,7 @@ func (a *auth) LoginWithGoogle(ctx context.Context, req *dto.LoginWithGoogleRequ
 		Email:   user.Email,
 		Exp:     time.Now().Add(time.Hour * 72).Unix(),
 	}
-	token, err := helper.CreateToken(tokenInfo, a.jwtKey)
+	token, err := a.token.Create(tokenInfo)
 	if err != nil {
 		return nil, helper.NewAppError(helper.INTERNAL_ERROR, "failed to create token", err)
 	}
@@ -80,7 +80,7 @@ func (a *auth) LoginWithPassword(ctx context.Context, req *dto.LoginWithPassword
 		Exp:     time.Now().Add(time.Hour * 72).Unix(),
 	}
 
-	token, err := helper.CreateToken(tokenInfo, a.jwtKey)
+	token, err := a.token.Create(tokenInfo)
 	if err != nil {
 		return nil, helper.NewAppError(helper.INTERNAL_ERROR, "failed to create token", err)
 	}
