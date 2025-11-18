@@ -2,7 +2,7 @@ package dto
 
 type RegisterRequest struct {
 	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"requeired,email"`
+	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
@@ -11,8 +11,8 @@ type LoginWithGoogleRequest struct {
 }
 
 type LoginWithPasswordRequest struct {
-	Email    string `json:"email" binding:"requeired,email"`
-	Password string `json:"password" binding:"requeired"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 type RegisterResponse struct {
