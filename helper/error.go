@@ -1,6 +1,11 @@
 package helper
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type AppError struct {
 	Code    string
@@ -15,8 +20,22 @@ func (e *AppError) Error() string {
 	return fmt.Sprintf("[%s] %s", e.Code, e.Message)
 }
 
-func (e *AppError) WriteError() {
+func (e *AppError) WriteError(c *gin.Context) {
+	status := http.StatusInternalServerError
+	switch e.Code {
+	case INTERNAL_ERROR:
+		status = http.StatusInternalServerError
+	case VALIDATION_ERROR:
+		status = http.StatusBadRequest
+	case NOT_FOUND:
+		status = http.StatusNotFound
+	case LOGIN_ERROR:
+		status = http.StatusBadRequest
+	case EMAIL_EXIST:
+		status = http.StatusConflict
+	}
 
+	Fail(c, status, e.Message, e.Code, nil)
 }
 
 func NewAppError(code, message string, err error) *AppError {
@@ -24,9 +43,9 @@ func NewAppError(code, message string, err error) *AppError {
 }
 
 const (
-	INTERNAL_ERROR string = "INTERNAL_SERVER_ERROR"
-	INVALID_INPUT  string = "INVALID_INPUT"
-	NOT_FOUND      string = "NOT_FOUND"
-	LOGIN_ERROR    string = "LOGIN_ERROR"
-	EMAIL_EXIST    string = "EMAIL_EXIST"
+	INTERNAL_ERROR   string = "INTERNAL_SERVER_ERROR"
+	VALIDATION_ERROR string = "VALIDATION_ERROR"
+	NOT_FOUND        string = "NOT_FOUND"
+	LOGIN_ERROR      string = "LOGIN_ERROR"
+	EMAIL_EXIST      string = "EMAIL_EXIST"
 )

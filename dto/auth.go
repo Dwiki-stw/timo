@@ -1,18 +1,18 @@
 package dto
 
 type RegisterRequest struct {
-	Name     string `json:"name" validate:"required"`
-	Email    string `json:"email" validate:"requeired,email"`
-	Password string `json:"password" validate:"required"`
+	Name     string `json:"name" binding:"required"`
+	Email    string `json:"email" binding:"requeired,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 type LoginWithGoogleRequest struct {
-	IdToken string `json:"id_token" validate:"required"`
+	IdToken string `json:"id_token" binding:"required"`
 }
 
 type LoginWithPasswordRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"requeired,email"`
+	Password string `json:"password" binding:"requeired"`
 }
 
 type RegisterResponse struct {
