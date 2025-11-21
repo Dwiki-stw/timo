@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 	"timo/domain"
 	"timo/models"
@@ -59,6 +60,9 @@ func (j *journal) GetByID(ctx context.Context, uid string) (*models.Journal, err
 	err := j.pool.QueryRow(ctx, query, uid).
 		Scan(&journal.ID, &journal.Uid, &journal.UserID, &journal.Title, &journal.Text, &journal.MoodID, &journal.MoodLabel, &journal.CreatedAt, &journal.UpdatedAt)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, sql.ErrNoRows
+		}
 		return nil, err
 	}
 
